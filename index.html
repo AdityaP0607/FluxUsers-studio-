@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <!-- Content Security Policy (CSP) - Prevents unauthorized malicious scripts from running -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' https:;">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxuser Studioz | Web & Identity Design Studio</title>
+    
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        linen: '#F5F4F0',
+                        linenDark: '#EBEAE5',
+                        charcoal: '#191919',
+                        terracotta: '#CE5A3E',
+                        cobalt: '#1D4ED8',
+                    },
+                    fontFamily: {
+                        syne: ['Syne', 'sans-serif'],
+                        editorial: ['"Cormorant Garamond"', 'serif'],
+                        mono: ['"Space Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts: Syne, Cormorant Garamond, and Space Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Smooth transitions for theme switcher */
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Architectural drafting lines */
+        .drafting-grid {
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(206, 90, 62, 0.04) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(206, 90, 62, 0.04) 1px, transparent 1px);
+            transition: background-image 0.5s ease;
+        }
+
+        /* Page Transition States */
+        .page-transition {
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .page-enter {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .page-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .page-exit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .page-exit-active {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        /* 3D Flip Card Styles */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        /* Active Flip State Transition */
+        .card-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Kinetic 3D Letter Drop-Down and Bounce Keyframes */
+        @keyframes letterDropBounce {
+            0% {
+                transform: translateY(-200px) rotateX(-90deg) scaleY(2);
+                opacity: 0;
+                filter: blur(4px);
+            }
+            45% {
+                transform: translateY(0) rotateX(0deg) scaleY(0.65);
+                opacity: 1;
+                filter: blur(0);
+            }
+            65% {
+                transform: translateY(-24px) rotateX(15deg) scaleY(1.15);
+            }
+            80% {
+                transform: translateY(6px) rotateX(-5deg) scaleY(0.9);
+            }
+            92% {
+                transform: translateY(-2px) rotateX(2deg) scaleY(1.02);
+            }
+            100% {
+                transform: translateY(0) rotateX(0) scaleY(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+        
+        .letter-bounce {
+            animation: letterDropBounce 1.2s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+            transform-origin: bottom center;
+        }
+
+        /* Flow-Connection Horizontal Color Wave Animation */
+        @keyframes colorWave {
+            0%, 100% {
+                color: #191919;
+                transform: scale(1);
+            }
+            30% {
+                color: #CE5A3E; /* Terracotta flow accent */
+                transform: scale(1.18) translateY(-6px);
+                text-shadow: 0 8px 16px rgba(206, 90, 62, 0.2);
+            }
+            60% {
+                color: #191919;
+                transform: scale(1);
+            }
+        }
+
+        .letter-wave-active {
+            animation: colorWave 1.4s ease-in-out infinite;
+        }
+
+        /* Hide default scrollbars cleanly */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .canvas-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    white-space: nowrap !important;
+    min-width: 115px;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.active-canvas-btn {
+    background-color: #d65f3d;
+    color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.inactive-canvas-btn {
+    background-color: transparent;
+    color: #78716c;
+}
+
+.inactive-canvas-btn:hover {
+    color: #292524;
+}
+    </style>
+</head>
+<body id="mainBody" class="bg-linen text-charcoal min-h-screen relative overflow-x-hidden selection:bg-terracotta selection:text-white drafting-grid">
+
+    <!-- INTRO LOADING SCREEN (Kinetic Letter Swarm & Progress Bar) -->
+    <div id="loadingScreen" class="fixed inset-0 z-[100] bg-linen flex flex-col items-center justify-center transition-all duration-1000 ease-in-out">
+        <div class="space-y-8 max-w-xl w-full px-8 text-center flex flex-col items-center justify-center">
+            
+            <!-- Outer 3D Perspective Box for kinetic character drop -->
+            <div class="perspective-1000 h-16 flex items-center justify-center select-none overflow-visible">
+                <div class="flex gap-2 md:gap-3.5 transition-all duration-1000 ease-out" id="logoLettersContainer">
+                    <!-- Letter Spans dynamically injected by DOM load scripts below -->
+                </div>
+            </div>
+
+            <!-- Loader Progress Diagnostics -->
+            <div class="space-y-4 w-full max-w-sm">
+                <div class="relative w-full h-[2px] bg-stone-300/40 rounded-full overflow-hidden" id="loadingBarBg">
+                    <div class="absolute top-0 left-0 h-full bg-terracotta w-0 transition-all duration-500 ease-out" id="loadingBar"></div>
+                </div>
+                <div class="flex justify-between items-center font-mono text-[9px] text-stone-400" id="loadingMeta">
+                    <span id="loadingSystemStatus" class="tracking-widest uppercase">CONNECTING SYSTEM NODES...</span>
+                    <span id="loadingPercent">0%</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ARCHITECTURAL DRAFTING AXIS LINES -->
+    <div id="axisX" class="cursor-axis-x left-0 w-full h-[1px] hidden md:block"></div>
+    <div id="axisY" class="cursor-axis-y top-0 w-[1px] h-full hidden md:block"></div>
+
+    <!-- STUDIO NAVBAR -->
+    <header class="sticky top-0 z-50 border-b border-stone-300/60 bg-transparent backdrop-blur-md px-6 py-4 flex justify-between items-center transition-colors duration-500">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="navigateTo('home')">
+            <div class="flex flex-col">
+                <span class="font-syne font-extrabold text-lg uppercase tracking-tight">FLUXUSER STUDIOZ</span>
+                <span class="font-mono text-[11px] tracking-widest text-stone-500 uppercase">Digital Product & Interaction Design Studio — Ahmedabad</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="hidden lg:flex flex-col text-right font-mono text-[10px]">
+                <span class="text-stone-400">STUDIO CLOCK:</span>
+                <span id="liveClock" class="text-stone-700 font-bold">00:00:00 AM IST</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CORE WRAPPER -->
+    <main class="max-w-6xl mx-auto px-6 py-12 relative z-10 min-h-[calc(100vh-140px)] flex flex-col justify-between">
+
+        <!-- DYNAMIC PAGE DISPLAY HUB -->
+        <div id="pageContainer" class="w-full">
+            
+            <!-- LANDING PAGE (Primary Full Screen View) -->
+            <div id="page-home" class="page-transition page-enter-active space-y-12">
+                <div class="space-y-6 max-w-4xl">
+                    <div class="inline-block border border-terracotta/40 px-3 py-1 rounded-full text-terracotta font-mono text-[11px] uppercase font-bold tracking-widest transition-colors duration-500 animate-pulse" id="badgeTag">
+                        [ Global Design Standards | Next-Generation UI/UX | High-Performance Digital Products ]
+                    </div>
+                    
+                    <h1 class="font-syne font-extrabold text-4xl sm:text-6xl leading-[1.08] tracking-tight transition-transform duration-500 transform hover:scale-[1.01]">
+                        We eliminate middlemen, agency overheads, and generic templates.
+                    </h1>
+
+                    <p class="font-editorial text-xl sm:text-2xl text-stone-600 leading-relaxed font-light" id="introPara">
+                        Fluxuser Studioz is a modern digital product and interaction design studio. We design and build beautiful, fast-loading digital experiences for brands and growing businesses worldwide.
+                    </p>
+                    
+                    <p class="font-editorial text-lg text-stone-500 font-light leading-relaxed max-w-2xl">
+                        Our studio is entirely <strong class="text-charcoal font-semibold">Founder-Led</strong>. This means we do not have salesmen, middle managers, or account executives. When you work with us, you talk directly to the experts—the designer and the developer—who are actually designing and coding your project. This keeps communication clear, speeds up decision-making, and ensures international-quality results.
+                    </p>
+                </div>
+
+                <!-- PERSISTENT PAGE NAVIGATION LINKS -->
+                <div class="pt-6 border-t border-stone-300/60 max-w-4xl">
+                    <span class="font-mono text-[10px] uppercase tracking-widest text-stone-400 block mb-4">[ EXPLORE STUDIO NODES ]</span>
+                    <nav class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 font-mono text-xs uppercase tracking-widest">
+                        <button onclick="navigateTo('who-we-are')" class="nav-btn-highlight group border border-stone-300/80 hover:border-terracotta hover:bg-white p-4 rounded-xl text-left flex flex-col justify-between h-28 transition-all duration-300 shadow-sm">
+                            <span class="text-stone-400 group-hover:text-terracotta font-bold text-[10px]">01 / WHO WE ARE</span>
+                            <span class="flex justify-between items-center w-full mt-2 font-syne font-bold text-sm text-charcoal nav-btn-title">Manifesto & Team <span class="group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                        </button>
+                        <button onclick="navigateTo('what-we-craft')" class="nav-btn-highlight group border border-stone-300/80 hover:border-terracotta hover:bg-white p-4 rounded-xl text-left flex flex-col justify-between h-28 transition-all duration-300 shadow-sm">
+                            <span class="text-stone-400 group-hover:text-terracotta font-bold text-[10px]">02 / WHAT WE CRAFT</span>
+                            <span class="flex justify-between items-center w-full mt-2 font-syne font-bold text-sm text-charcoal nav-btn-title">Our Expertise <span class="group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                        </button>
+                        <button onclick="navigateTo('selected-work')" class="nav-btn-highlight group border border-stone-300/80 hover:border-terracotta hover:bg-white p-4 rounded-xl text-left flex flex-col justify-between h-28 transition-all duration-300 shadow-sm">
+                            <span class="text-stone-400 group-hover:text-terracotta font-bold text-[10px]">03 / SELECTED WORK</span>
+                            <span class="flex justify-between items-center w-full mt-2 font-syne font-bold text-sm text-charcoal nav-btn-title">Concepts & UX <span class="group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                        </button>
+                        <!-- UPDATED CODE (Centered Option A): -->
+                         <button onclick="navigateTo('sandbox')" class="nav-btn-highlight group border border-stone-300/80 hover:border-terracotta hover:bg-white p-4 rounded-xl text-left flex flex-col justify-between h-28 transition-all duration-300 shadow-sm">
+                            <span class="text-stone-400 group-hover:text-terracotta font-bold text-[10px]">04 / INTERACTIVE SANDBOX</span>
+                            <span class="flex justify-center items-center gap-2 w-full mt-2 font-syne font-bold text-sm text-charcoal nav-btn-title">Work Space <span class="group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                        </button>
+                        <button onclick="navigateTo('connect')" class="nav-btn-highlight group border border-stone-300/80 hover:border-terracotta hover:bg-white p-4 rounded-xl text-left flex flex-col justify-between h-28 transition-all duration-300 shadow-sm">
+                            <span class="text-stone-400 group-hover:text-terracotta font-bold text-[10px]">05 / CONNECT TERMINAL</span>
+                            <span class="flex justify-between items-center w-full mt-2 font-syne font-bold text-sm text-charcoal nav-btn-title">Start Project <span class="group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- PAGE 01: WHO WE ARE (Manifesto & Team with Click-to-Flip Cards) -->
+            <div id="page-who-we-are" class="page-transition page-enter hidden space-y-12">
+                <div class="flex items-center gap-4 font-mono text-xs text-stone-400 uppercase tracking-widest section-header">
+                    <span class="section-header-text">01 // Who We Are</span>
+                    <button onclick="navigateTo('home')" class="text-terracotta font-bold hover:underline cursor-pointer lowercase flex items-center gap-1">&larr; [ escape back to board ]</button>
+                    <div class="h-[1px] bg-stone-300/80 flex-grow section-header-line"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-5 space-y-6">
+                        <h2 class="font-syne font-extrabold text-3xl sm:text-4xl tracking-tight leading-tight">Building live assets, not paper homework.</h2>
+                        <p class="font-editorial text-lg text-stone-600 leading-relaxed font-light">
+                            We don't deal in corporate packages or hand over basic layouts built with rigid page-builders. We target local interior studios, restaurants, tech groups, and institutions whose current digital presence doesn't show how capable they really are.
+                        </p>
+                        <p class="font-editorial text-lg text-stone-600 leading-relaxed font-light">
+                            Because we are scaling our own studio portfolio, your brand gets our full undivided attention and fresh technical insights directly from our modern coursework.
+                        </p>
+                        <div class="p-4 rounded-xl border border-dashed border-stone-300/80 font-mono text-[10px] text-stone-500 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-terracotta animate-ping"></span>
+                            <span>PRO TIP: TAP / CLICK WORK CARDS AND BIOS TO FLIP THEM</span>
+                        </div>
+                    </div>
+
+                    <!-- Dossiers Grid with Click-to-Flip Mechanics -->
+                    <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Aditya Click-to-Flip Card -->
+                        <div class="perspective-1000 w-full aspect-[4/5] cursor-pointer" onclick="toggleFounderCard(this)">
+                            <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                                
+                                <!-- CARD FRONT -->
+                                <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-6 rounded-2xl flex flex-col justify-between shadow-sm founder-card-target">
+                                    <div class="w-full h-full bg-stone-200 rounded-xl overflow-hidden border border-stone-300 relative">
+                                        <!-- Removed grayscale-hover animation completely, full color image -->
+                                        <img src="aditya.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/400x500/191919/F5F4F0?text=Aditya+Pandya'" alt="Aditya Pandya" class="w-full h-full object-cover transition-all duration-700 ease-out scale-105">
+                                        
+                                        
+                                        <!-- Micro Pulsing Tap Suggestion HUD (Displayed if idle) -->
+                                        <div class="tap-hint-layer absolute inset-0 bg-black/30 backdrop-blur-[1px] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 z-20">
+                                            <div class="bg-charcoal/90 text-stone-200 px-3 py-2 rounded border border-terracotta/40 shadow-lg text-center animate-bounce">
+                                                <span class="font-mono text-[8px] uppercase tracking-widest font-bold block mb-1">TAP GRAPHIC LINK</span>
+                                                <span class="text-[9px] text-terracotta">&rarr; VIEW SPECS &larr;</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pt-4 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-mono text-[9px] text-stone-400 uppercase tracking-widest">[ FRONT VIEW ]</span>
+                                            <h4 class="font-syne font-bold text-lg text-charcoal founder-name">Aditya Pandya</h4>
+                                        </div>
+                                        <span class="font-mono text-[10px] text-terracotta font-bold">[TAP CARD]</span>
+                                    </div>
+                                </div>
+
+                                <!-- CARD BACK -->
+                                <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-stone-200/60 p-6 rounded-2xl flex flex-col justify-between shadow-md founder-card-target-back">
+                                    <!-- Blueprint Grid Overlay -->
+                                    <div class="absolute inset-0 opacity-100 pointer-events-none rounded-2xl" 
+                                         style="background-size: 15px 15px; background-image: linear-gradient(to right, rgba(206,90,62,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(206,90,62,0.04) 1px, transparent 1px);">
+                                    </div>
+                                    <div class="relative z-10 space-y-4">
+                                        <div class="flex justify-between items-baseline border-b border-dashed border-stone-200 pb-2">
+                                            <span class="font-mono text-[10px] text-terracotta font-bold tracking-widest uppercase dossier-tag">[ Founder // Technical Lead ]</span>
+                                            
+                                        </div>
+                                        <p class="font-editorial text-stone-600 text-sm leading-relaxed font-light founder-bio">
+                                            Handles the logical infrastructure, technical execution, and fluid deployment pipelines. Focused on writing exceptionally fast, clean custom code architectures that remove the clutter of heavy template bundles.
+                                        </p>
+                                    </div>
+                                    <div class="relative z-10 border-t border-dashed border-stone-200 pt-3 flex flex-col gap-1 font-mono text-[9px] text-stone-400 meta-footer-line">
+                                        <div class="flex justify-between">
+                                            
+                                            <span class="text-terracotta font-bold">+91 92656 55478</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Pushti Click-to-Flip Card -->
+                        <div class="perspective-1000 w-full aspect-[4/5] cursor-pointer" onclick="toggleFounderCard(this)">
+                            <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                                
+                                <!-- CARD FRONT -->
+                                <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-6 rounded-2xl flex flex-col justify-between shadow-sm founder-card-target">
+                                    <div class="w-full h-full bg-stone-200 rounded-xl overflow-hidden border border-stone-300 relative">
+                                        <!-- Removed grayscale-hover animation completely, full color image -->
+                                        <img src="pushti.jpeg" onerror="this.onerror=null; this.src='https://placehold.co/400x500/191919/F5F4F0?text=Pushti+Gandhi'" alt="Pushti Gandhi" class="w-full h-full object-cover transition-all duration-700 ease-out scale-105">
+                                        <div class="absolute bottom-2 left-2 bg-charcoal/80 text-[8px] font-mono text-stone-300 px-2 py-0.5 rounded tracking-widest backdrop-blur-sm">
+                                        </div>
+                                        
+                                        <!-- Micro Pulsing Tap Suggestion HUD (Displayed if idle) -->
+                                        <div class="tap-hint-layer absolute inset-0 bg-black/30 backdrop-blur-[1px] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500 z-20">
+                                            <div class="bg-charcoal/90 text-stone-200 px-3 py-2 rounded border border-terracotta/40 shadow-lg text-center animate-bounce">
+                                                <span class="font-mono text-[8px] uppercase tracking-widest font-bold block mb-1">TAP GRAPHIC LINK</span>
+                                                <span class="text-[9px] text-terracotta">&rarr; VIEW SPECS &larr;</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pt-4 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-mono text-[9px] text-stone-400 uppercase tracking-widest">[ FRONT VIEW ]</span>
+                                            <h4 class="font-syne font-bold text-lg text-charcoal founder-name">Pushti Gandhi</h4>
+                                        </div>
+                                        <span class="font-mono text-[10px] text-terracotta font-bold">[TAP CARD]</span>
+                                    </div>
+                                </div>
+
+                                <!-- CARD BACK -->
+                                <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-terracotta p-6 rounded-2xl flex flex-col justify-between shadow-md founder-card-target-back">
+                                    <!-- Blueprint Grid Overlay -->
+                                    <div class="absolute inset-0 opacity-100 pointer-events-none rounded-2xl" 
+                                         style="background-size: 15px 15px; background-image: linear-gradient(to right, rgba(206,90,62,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(206,90,62,0.04) 1px, transparent 1px);">
+                                    </div>
+                                    <div class="relative z-10 space-y-4">
+                                        <div class="flex justify-between items-baseline border-b border-dashed border-stone-200 pb-2">
+                                            <span class="font-mono text-[10px] text-terracotta font-bold tracking-widest uppercase dossier-tag">[ Co-Founder // Design Lead ]</span>
+                                            
+                                        </div>
+                                        <p class="font-editorial text-stone-600 text-sm leading-relaxed font-light founder-bio">
+                                            Directs visual layout structures, spatial interface balancing, and core branding identities. Specializes in capturing how your brand operates offline and shaping it into clean geometric web designs.
+                                        </p>
+                                    </div>
+                                    <div class="relative z-10 border-t border-dashed border-stone-200 pt-3 flex flex-col gap-1 font-mono text-[9px] text-stone-400 meta-footer-line">
+                                        <div class="flex justify-between">
+                                            
+                                            <span class="text-terracotta font-bold">+91 87802 18033</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 02: WHAT WE CRAFT (Expertise with Click-to-Flip Cards) -->
+            <div id="page-what-we-craft" class="page-transition page-enter hidden space-y-12">
+                <div class="flex items-center gap-4 font-mono text-xs text-stone-400 uppercase tracking-widest section-header">
+                    <span class="section-header-text">02 // What We Craft</span>
+                    <button onclick="navigateTo('home')" class="text-terracotta font-bold hover:underline cursor-pointer lowercase flex items-center gap-1">&larr; [ escape back to board ]</button>
+                    <div class="h-[1px] bg-stone-300/80 flex-grow section-header-line"></div>
+                </div>
+
+                <div class="space-y-4 max-w-4xl">
+                    <h2 class="font-syne font-extrabold text-3xl sm:text-4xl tracking-tight">We listen to your goals and build everything from scratch.</h2>
+                    <p class="font-editorial text-lg text-stone-600 font-light max-w-2xl">
+                        We do not use cheap, ready-made templates. We design custom layout schemes tailored exactly to how your business operations function.
+                    </p>
+                </div>
+
+                <!-- 3D Flip Grid for Craft Cards (Click-to-Flip) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Craft Card 1 -->
+                    <div class="perspective-1000 w-full h-[220px] cursor-pointer" onclick="toggleFounderCard(this)">
+                        <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                            <!-- FRONT -->
+                            <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-6 rounded-xl flex flex-col justify-between shadow-sm cap-card-target" id="capCard1">
+                                <div>
+                                    <span class="font-mono text-xs text-terracotta font-bold card-spec-tag">[ UI/UX & EXPERIENCE DESIGN ]</span>
+                                    <h4 class="font-syne font-bold text-xl mt-4 card-title-target text-charcoal">Figma Prototyping</h4>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">[ TAP TO DECRYPT PATHWAY ]</span>
+                            </div>
+                            <!-- BACK -->
+                            <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-terracotta p-6 rounded-xl flex flex-col justify-between shadow-md cap-card-back">
+                                <div>
+                                    <span class="font-mono text-[10px] text-terracotta font-bold block mb-2">[ SECURE SPECS ]</span>
+                                    <p class="font-editorial text-stone-600 text-sm font-light card-desc-target">Creating clean, modern mobile app and website layouts (prototypes) that look amazing and are super easy for your customers to use.</p>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">ENGINE LAYER: COMPLIANT // SECURE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Craft Card 2 -->
+                    <div class="perspective-1000 w-full h-[220px] cursor-pointer" onclick="toggleFounderCard(this)">
+                        <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                            <!-- FRONT -->
+                            <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-6 rounded-xl flex flex-col justify-between shadow-sm cap-card-target" id="capCard2">
+                                <div>
+                                    <span class="font-mono text-xs text-terracotta font-bold card-spec-tag">[ COMMERCE ENGINE ]</span>
+                                    <h4 class="font-syne font-bold text-xl mt-4 card-title-target text-charcoal">High-Converting Stores</h4>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">[ TAP TO DECRYPT PATHWAY ]</span>
+                            </div>
+                            <!-- BACK -->
+                            <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-terracotta p-6 rounded-xl flex flex-col justify-between shadow-md cap-card-back">
+                                <div>
+                                    <span class="font-mono text-[10px] text-terracotta font-bold block mb-2">[ SECURE SPECS ]</span>
+                                    <p class="font-editorial text-stone-600 text-sm font-light card-desc-target">Designing online stores with smooth layouts and fast checkout journeys that keep customers happy and increase your sales.</p>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">ENGINE LAYER: COMPLIANT // SECURE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Craft Card 3 -->
+                    <div class="perspective-1000 w-full h-[220px] cursor-pointer" onclick="toggleFounderCard(this)">
+                        <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                            <!-- FRONT -->
+                            <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-6 rounded-xl flex flex-col justify-between shadow-sm cap-card-target" id="capCard3">
+                                <div>
+                                    <span class="font-mono text-xs text-terracotta font-bold card-spec-tag">[ SAAS & METRICS ]</span>
+                                    <h4 class="font-syne font-bold text-xl mt-4 card-title-target text-charcoal">Business Dashboards</h4>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">[ TAP TO DECRYPT PATHWAY ]</span>
+                            </div>
+                            <!-- BACK -->
+                            <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-terracotta p-6 rounded-xl flex flex-col justify-between shadow-md cap-card-back">
+                                <div>
+                                    <span class="font-mono text-[10px] text-terracotta font-bold block mb-2">[ SECURE SPECS ]</span>
+                                    <p class="font-editorial text-stone-600 text-sm font-light card-desc-target">Turning complex business tools, data, and software screens into clean, simple, and intelligent visual dashboards.</p>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">ENGINE LAYER: COMPLIANT // SECURE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Craft Card 4 -->
+                    <div class="perspective-1000 w-full h-[220px] cursor-pointer" onclick="toggleFounderCard(this)">
+                        <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                            <!-- FRONT -->
+                            <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-6 rounded-xl flex flex-col justify-between shadow-sm cap-card-target" id="capCard4">
+                                <div>
+                                    <span class="font-mono text-xs text-terracotta font-bold card-spec-tag">[ MOTION PROTOCOLS ]</span>
+                                    <h4 class="font-syne font-bold text-xl mt-4 card-title-target text-charcoal">Advanced Micro-Interactions</h4>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">[ TAP TO DECRYPT PATHWAY ]</span>
+                            </div>
+                            <!-- BACK -->
+                            <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-terracotta p-6 rounded-xl flex flex-col justify-between shadow-md cap-card-back">
+                                <div>
+                                    <span class="font-mono text-[10px] text-terracotta font-bold block mb-2">[ SECURE SPECS ]</span>
+                                    <p class="font-editorial text-stone-600 text-sm font-light card-desc-target">Adding smooth, modern animations to your website that grab attention, tell your brand story, and guide users to make enquiries.</p>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-400">ENGINE LAYER: COMPLIANT // SECURE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bg-white/20 p-8 rounded-2xl border border-dashed border-stone-300/80 max-w-4xl space-y-6">
+                    <h3 class="font-syne font-bold text-xl">Future-Proof Standards We Follow</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <h4 class="font-mono text-xs font-bold text-terracotta">[ High-Performance Custom Code ]</h4>
+                            <p class="font-editorial text-sm text-stone-600">Built using lightweight scripting structures, optimized asset delivery, and static compilation pathways for blazing-fast load times.</p>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-mono text-xs font-bold text-terracotta">[ Direct Team Engagement ]</h4>
+                            <p class="font-editorial text-sm text-stone-600">No account managers or sales representatives to slow down delivery. You build and refine directly with the principal developers and designers.</p>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-mono text-xs font-bold text-terracotta">[ Search & Mobile Optimization ]</h4>
+                            <p class="font-editorial text-sm text-stone-600">Complete architectural SEO compliance, fluid viewport responsiveness, and semantic layout tags configured as standard.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 03: SELECTED WORK (Case Studies with Click-to-Flip Cards) -->
+            <div id="page-selected-work" class="page-transition page-enter hidden space-y-12">
+                <div class="flex items-center gap-4 font-mono text-xs text-stone-400 uppercase tracking-widest section-header">
+                    <span class="section-header-text">03 // Selected Work</span>
+                    <button onclick="navigateTo('home')" class="text-terracotta font-bold hover:underline cursor-pointer lowercase flex items-center gap-1">&larr; [ escape back to board ]</button>
+                    <div class="h-[1px] bg-stone-300/80 flex-grow section-header-line"></div>
+                </div>
+
+                <div class="space-y-4 max-w-4xl">
+                    <h2 class="font-syne font-extrabold text-3xl sm:text-4xl tracking-tight leading-tight">Selected Work & Concepts</h2>
+                    <p class="font-editorial text-lg text-stone-600 font-light">
+                        Exploring our active deployment systems, UX architectures, and brand representations.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Case Study 1 with Click-to-Flip Card -->
+                    <div class="perspective-1000 w-full h-[320px] cursor-pointer" onclick="toggleFounderCard(this)">
+                        <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                            <!-- FRONT -->
+                            <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-8 rounded-2xl flex flex-col justify-between shadow-sm work-card-target">
+                                <div>
+                                    <span class="font-mono text-[10px] text-terracotta font-bold tracking-widest uppercase">[ COMPLETED DEPLOYMENT ]</span>
+                                    <h3 class="font-syne font-bold text-3xl mt-4 text-charcoal">Frictionless UX Optimization</h3>
+                                </div>
+                                <div class="flex justify-between items-center text-stone-400 font-mono text-[9px] border-t border-dashed border-stone-200 pt-4">
+                                    <span>SEGMENT: INTERACTION SYSTEMS</span>
+                                    <span class="text-terracotta font-bold">[ TAP CARD TO DECRYPT STUDY &rarr; ]</span>
+                                </div>
+                            </div>
+                            <!-- BACK -->
+                            <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-terracotta p-8 rounded-2xl flex flex-col justify-between shadow-md work-card-back">
+                                <div class="space-y-4">
+                                    <span class="font-mono text-[10px] text-terracotta font-bold block">[ PERFORMANCE METRICS ]</span>
+                                    <p class="font-editorial text-stone-600 text-base leading-relaxed font-light">
+                                        Redesigned the entire user journey for an online platform, lowering customer drop-out rates, refining interaction pipelines, and significantly increasing active user engagement parameters.
+                                    </p>
+                                </div>
+                                <div class="border-t border-dashed border-stone-200 pt-4 flex gap-2 font-mono text-[10px] text-stone-400">
+                                    <span>METRICS: LOWER DROP-OUT RATES</span>
+                                    <span>/</span>
+                                    <span>UI REDESIGN</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Case Study 2 with Click-to-Flip Card -->
+                    <div class="perspective-1000 w-full h-[320px] cursor-pointer" onclick="toggleFounderCard(this)">
+                        <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ease-out">
+                            <!-- FRONT -->
+                            <div class="absolute inset-0 backface-hidden bg-white/40 border border-stone-200/60 p-8 rounded-2xl flex flex-col justify-between shadow-sm work-card-target">
+                                <div>
+                                    <span class="font-mono text-[10px] text-terracotta font-bold tracking-widest uppercase">[ COMPLETED DEPLOYMENT ]</span>
+                                    <h3 class="font-syne font-bold text-3xl mt-4 text-charcoal">Next-Gen Digital Identity & Platforms</h3>
+                                </div>
+                                <div class="flex justify-between items-center text-stone-400 font-mono text-[9px] border-t border-dashed border-stone-200 pt-4">
+                                    <span>SEGMENT: BRANDING INFRA</span>
+                                    <span class="text-terracotta font-bold">[ TAP CARD TO DECRYPT STUDY &rarr; ]</span>
+                                </div>
+                            </div>
+                            <!-- BACK -->
+                            <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] bg-white border border-terracotta p-8 rounded-2xl flex flex-col justify-between shadow-md work-card-back">
+                                <div class="space-y-4">
+                                    <span class="font-mono text-[10px] text-terracotta font-bold block">[ PERFORMANCE METRICS ]</span>
+                                    <p class="font-editorial text-stone-600 text-base leading-relaxed font-light">
+                                        Created high-end animated portfolios and premium product designs for growing brands, establishing their strong presence in the market through custom layout frameworks.
+                                    </p>
+                                </div>
+                                <div class="border-t border-dashed border-stone-200 pt-4 flex gap-2 font-mono text-[10px] text-stone-400">
+                                    <span>PLATFORMS: WEBGL & FIGMA</span>
+                                    <span>/</span>
+                                    <span>BRANDING</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="bg-white/20 p-8 rounded-2xl border border-dashed border-stone-300/80 max-w-4xl space-y-6">
+                    <h3 class="font-syne font-bold text-2xl">Our Engagement Process</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2 border-l-2 border-stone-300 pl-4">
+                            <span class="font-mono text-xs text-terracotta font-bold">STAGE 01</span>
+                            <h4 class="font-syne font-bold text-base">Discovery & Strategy</h4>
+                            <p class="font-editorial text-stone-600 text-sm leading-relaxed">We sit down with you to understand your business model, your target audience, and your competitors.</p>
+                        </div>
+                        <div class="space-y-2 border-l-2 border-stone-300 pl-4">
+                            <span class="font-mono text-xs text-terracotta font-bold">STAGE 02</span>
+                            <h4 class="font-syne font-bold text-base">Wireframing & UI/UX</h4>
+                            <p class="font-editorial text-stone-600 text-sm leading-relaxed">Before writing a single line of code, we design the exact visual look on Figma so you can see and approve it.</p>
+                        </div>
+                        <div class="space-y-2 border-l-2 border-stone-300 pl-4">
+                            <span class="font-mono text-xs text-terracotta font-bold">STAGE 03</span>
+                            <h4 class="font-syne font-bold text-base">Engineering & Deployment</h4>
+                            <p class="font-editorial text-stone-600 text-sm leading-relaxed">We write clean, high-performance code and launch your product safely on secure global servers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 04: INTERACTIVE SANDBOX -->
+            <div id="page-sandbox" class="page-transition page-enter hidden space-y-12">
+                <div class="flex items-center gap-4 font-mono text-xs text-stone-400 uppercase tracking-widest section-header">
+                    <span class="section-header-text">04 // Interactive Sandbox</span>
+                    <button onclick="navigateTo('home')" class="text-terracotta font-bold hover:underline cursor-pointer lowercase flex items-center gap-1">&larr; [ escape back to board ]</button>
+                    <div class="h-[1px] bg-stone-300/80 flex-grow section-header-line"></div>
+                </div>
+
+                <div class="space-y-4 max-w-4xl">
+                    <h2 class="font-syne font-extrabold text-3xl sm:text-4xl tracking-tight leading-tight">Visual Blueprint Workspace</h2>
+                    <p class="font-editorial text-lg text-stone-600 font-light max-w-3xl">
+                        Select an engine layer to swap the viewport configuration between structural wireframe design, styled digital skins, or compiled raw DOM code.
+                    </p>
+                </div>
+
+                 <div class="space-y-6 max-w-5xl">
+                    <!-- Dynamic Figma-Style Design Panel Toolbar -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border border-stone-300/80 rounded-xl p-2 bg-white/80 shadow-sm gap-4">
+
+    <!-- Left Label -->
+    <div class="flex items-center gap-2 shrink-0">
+        <span class="w-3 h-3 rounded-full bg-terracotta animate-pulse"></span>
+        <span class="font-mono text-[10px] text-stone-500 uppercase tracking-widest whitespace-nowrap">
+            [ VIEWPORT LAYER CONFIG ]
+        </span>
+    </div>
+
+    <!-- Right Buttons -->
+    <div class="flex items-center gap-2 w-full sm:w-auto justify-start sm:justify-end overflow-x-auto whitespace-nowrap">
+
+        <button
+            onclick="setCanvasMode('wireframe')"
+            id="btn-wireframe"
+            class="canvas-mode-btn active-canvas-btn"
+        >
+            [Wireframe]
+        </button>
+
+        <button
+            onclick="setCanvasMode('design')"
+            id="btn-design"
+            class="canvas-mode-btn inactive-canvas-btn"
+        >
+            [Skin UI]
+        </button>
+
+        <button
+            onclick="setCanvasMode('code')"
+            id="btn-code"
+            class="canvas-mode-btn inactive-canvas-btn"
+        >
+            [Raw Code]
+        </button>
+
+    </div>
+</div>
+
+
+                    
+
+                    <!-- MOCK ENGINE INTERFACE FRAME -->
+                    <div class="bg-[#111111] text-white border-4 border-[#2D2D2D] rounded-xl overflow-hidden shadow-xl aspect-video relative flex flex-col transition-all duration-500">
+                        <div class="bg-[#212121] px-4 py-2 flex items-center justify-between border-b border-[#2D2D2D]">
+                            <div class="flex gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27C93F]"></span>
+                            </div>
+                            <span class="font-mono text-[9px] text-stone-400">workspace_preview.html</span>
+                            <span id="canvasModeLabel" class="font-mono text-[9px] uppercase px-2 py-0.5 rounded bg-terracotta/20 text-terracotta font-bold transition-all">WIREFRAME ACTIVE</span>
+                        </div>
+
+                        <!-- CHANGING PREVIEW DISPLAY PORT -->
+                        <div class="p-8 flex-1 flex flex-col justify-between transition-all duration-500" id="viewportArea">
+                            <!-- Architectural Blueprint overlay guidelines -->
+                            <div class="absolute inset-0 opacity-10 pointer-events-none" 
+                                 style="background-size: 20px 20px; background-image: radial-gradient(circle, #CE5A3E 1px, transparent 1px);">
+                            </div>
+
+                            <!-- Interactive Header HUD -->
+                            <div class="flex justify-between items-center border-b border-dashed border-stone-800 pb-4 relative z-10">
+                                <div class="flex flex-col">
+                                    <span class="font-mono text-[8px] text-terracotta uppercase tracking-widest">[ COMPONENT LOGO ENGINE ]</span>
+                                    <span class="font-syne font-bold text-sm tracking-tight text-white mt-1">FLUXUSER.STUDIOZ</span>
+                                </div>
+                                <span class="font-mono text-[9px] text-stone-500">COORD: [X: 520, Y: 140]</span>
+                            </div>
+
+                            <!-- Main Layout Container Blueprint Mockup -->
+                            <div class="my-6 relative z-10 space-y-6 flex-1 flex flex-col justify-center">
+                                <!-- Simulated Vector bounding boxes -->
+                                <div class="relative border border-dashed border-terracotta/40 rounded-lg p-6 bg-terracotta/5 group flex flex-col justify-center items-center h-44 transition-all duration-300">
+                                    <div class="absolute -top-2 -left-2 w-3.5 h-3.5 border border-terracotta bg-white"></div>
+                                    <div class="absolute -top-2 -right-2 w-3.5 h-3.5 border border-terracotta bg-white"></div>
+                                    <div class="absolute -bottom-2 -left-2 w-3.5 h-3.5 border border-terracotta bg-white"></div>
+                                    <div class="absolute -bottom-2 -right-2 w-3.5 h-3.5 border border-terracotta bg-white"></div>
+                                    
+                                    <div class="space-y-2 text-center">
+                                        <span class="font-mono text-[9px] text-terracotta uppercase tracking-widest block">[ LAYOUT_BOUNDING_BOX_PRIMARY ]</span>
+                                        <h3 class="font-syne font-extrabold text-xl sm:text-2xl text-white tracking-tight leading-tight">Design Architecture Personalization System</h3>
+                                        <p class="font-editorial text-stone-400 text-xs sm:text-sm font-light max-w-md mx-auto">Dynamic container responsive parameters recalculate dynamically relative to client screen sizes.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Telemetry Status Bar -->
+                            <div class="flex justify-between items-center text-stone-500 font-mono text-[9px] border-t border-dashed border-stone-800 pt-4 relative z-10">
+                                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-terracotta"></span> DRAFT SNAP: 30PX</span>
+                                <span>VECTOR STRUCT: FALSE</span>
+                                <span>GRID COMPLIANCE: 100% OK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 05: CONNECT TERMINAL -->
+            <div id="page-connect" class="page-transition page-enter hidden space-y-12">
+                <div class="flex items-center gap-4 font-mono text-xs text-stone-400 uppercase tracking-widest section-header">
+                    <span class="section-header-text">05 // Connect Terminal</span>
+                    <button onclick="navigateTo('home')" class="text-terracotta font-bold hover:underline cursor-pointer lowercase flex items-center gap-1">&larr; [ escape back to board ]</button>
+                    <div class="h-[1px] bg-stone-300/80 flex-grow section-header-line"></div>
+                </div>
+
+                <div class="bg-white border border-stone-300/80 p-8 rounded-2xl shadow-sm space-y-8 max-w-4xl" id="formContainer">
+                    <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+                        <span class="font-mono text-xs text-stone-400">[ SECURING CAMPAIGN PARAMETERS ]</span>
+                        <div class="flex gap-2 items-center">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="font-mono text-[9px] text-stone-500">GATEWAY CONNECTED</span>
+                        </div>
+                    </div>
+
+                    <!-- Conversational Flow Form (Connected to FormSubmit 100% Free Autoresponder Endpoint) -->
+                    <form action="https://formsubmit.co/fluxuserstudioz@gmail.com" method="POST" class="font-editorial text-lg md:text-xl text-stone-800 leading-loose space-y-6" id="terminalForm">
+                        
+                        <!-- FormSubmit Honeypot (Catches spam bots silently without hurting UX) -->
+                        <input type="text" name="_honey" style="display:none">
+
+                        <!-- FormSubmit Configuration Hidden Fields -->
+                        <input type="hidden" name="_subject" value="[FLUXUSER STUDIOZ] Project Specification Registered">
+                        
+                        <!-- Custom Email Autoresponder Text -->
+                        <input type="hidden" name="_autoresponse" value="Hello,
+
+Thank you for dispatching your project specification details to the Fluxuser Studioz terminal. 
+
+Our team has successfully received your parameters. We will initiate our review protocol and contact you within 24–48 hours to schedule a direct system consultation.
+
+Best regards,
+
+The Fluxuser Studioz Team
+Ahmedabad, Gujarat, India
+fluxuserstudioz@gmail.com">
+
+                        <div>
+                            Hello Aditya & Pushti, my name is 
+                            <input type="text" name="client-name" required placeholder="[ Your Name ]" class="border-b border-stone-400 bg-transparent text-black outline-none focus:border-terracotta px-1 text-center font-bold tracking-tight form-input-node"> 
+                            and I am looking to grow 
+                            <input type="text" name="org-name" required placeholder="[ Studio / Venture Name ]" class="border-b border-stone-400 bg-transparent text-black outline-none focus:border-terracotta px-1 text-center font-bold tracking-tight form-input-node">.
+                        </div>
+                        <div>
+                            Our operations are based in 
+                            <input type="text" name="location" required placeholder="[ City Location ]" class="border-b border-stone-400 bg-transparent text-black outline-none focus:border-terracotta px-1 text-center font-bold tracking-tight form-input-node"> 
+                            and we'd love to partner with you on 
+                            <select name="service-request" class="border-b border-stone-400 bg-transparent text-terracotta font-mono text-sm uppercase tracking-wide font-bold outline-none cursor-pointer">
+                                <option>A Complete Redesign</option>
+                                <option>A Custom Build From Scratch</option>
+                                <option>Visual Identity Branding</option>
+                                <option>Strategic Consulting</option>
+                            </select>
+                            to improve our user metrics.
+                        </div>
+                        <div>
+                            Our creative focus aligns closely with 
+                            <select name="org-type" class="border-b border-stone-400 bg-transparent text-terracotta font-mono text-sm uppercase tracking-wide font-bold outline-none cursor-pointer">
+                                <option>An Interior Architecture Studio</option>
+                                <option>A Local Hospitality Brand / Cafe</option>
+                                <option>An NGO / Community Program</option>
+                                <option>An Independent Product Enterprise</option>
+                                <option>A Creative Agency / Art Collective</option>
+                                <option>A Modern Tech Startup / Digital Group</option>
+                                <option>An E-Commerce / Boutique Retail Venture</option>
+                                <option>A Real Estate / Property Venture</option>
+                                <option>A Professional Service Entity</option>
+                                <option>A Custom Creative / Other Project</option>
+                            </select>.
+                        </div>
+                        
+                        <!-- Conversational Custom Niche Write-In Option -->
+                        <div>
+                            To describe our specific niche in our own words, we are 
+                            <input type="text" name="client-custom-niche" placeholder="[ write your own description here, e.g. a sustainable streetwear label ]" class="border-b border-stone-400 bg-transparent text-black outline-none focus:border-terracotta px-1 text-center font-bold tracking-tight form-input-node w-full md:w-auto md:min-w-[320px]">.
+                        </div>
+                        <div>
+                            You can reach back to me directly at 
+                            <input type="email" name="email" required placeholder="[ Enter Email Node ]" class="border-b border-stone-400 bg-transparent text-black outline-none focus:border-terracotta px-1 text-center font-bold tracking-tight w-64 form-input-node"> 
+                            to initiate our blueprint review.
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-terracotta hover:bg-charcoal text-white font-syne font-semibold uppercase tracking-wider py-3.5 text-xs rounded-xl shadow-md cursor-pointer transition-colors duration-300" id="submitBtn">
+                                DISPATCH SPECIFICATION DATA
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- HIGH-CONTRAST CRAFT FOOTER -->
+    <footer class="bg-charcoal text-stone-200 border-t border-stone-800 px-6 py-16 relative z-10 transition-colors duration-500" id="mainFooter">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <div class="lg:col-span-6 space-y-4">
+                <span class="font-syne font-extrabold text-2xl uppercase tracking-tighter text-white">FLUXUSER STUDIOZ</span>
+                <p class="font-editorial text-lg text-stone-400 max-w-md leading-relaxed font-light">
+                    "We run on complete structural clarity. No corporate buffers, no hidden maintenance retainers—just reliable, direct access to the designers and developers shaping your system."
+                </p>
+            </div>
+
+            <div class="lg:col-span-6 space-y-8 lg:text-right">
+                <div class="flex flex-col space-y-1">
+                    <span class="font-mono text-[9px] uppercase tracking-widest text-stone-500">Central Digital Route</span>
+                    <a href="mailto:fluxuserstudioz@gmail.com" class="font-mono text-lg text-terracotta hover:text-white transition-colors" id="footerMail">fluxuserstudioz@gmail.com</a>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:justify-items-end text-xs">
+                    <div class="flex flex-col">
+                        <span class="font-mono text-[9px] uppercase tracking-widest text-stone-500">Aditya Pandya // Lead Dev</span>
+                        <a href="tel:+919265655478" class="font-mono text-stone-300 hover:text-white mt-1">+91 92656 55478</a>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-mono text-[9px] uppercase tracking-widest text-stone-500">Pushti Gandhi // Lead Design</span>
+                        <a href="tel:+918780218033" class="font-mono text-stone-300 hover:text-white mt-1">+91 87802 18033</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="max-w-6xl mx-auto border-t border-stone-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-mono text-stone-500">
+            <span>&copy; 2026 FLUXUSER STUDIOZ. POWERED BY ARCHITECTURAL COMPASS ENGINE LIFT.</span>
+            <span>AHMEDABAD, GUJARAT, INDIA</span>
+        </div>
+    </footer>
+
+    <!-- LOGIC SYSTEM SCRIPT -->
+    <script>
+        // 1. PAGE LOAD SYSTEM (ANIMATED INTRO LOADING SCREEN)
+        window.addEventListener('DOMContentLoaded', () => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingBar = document.getElementById('loadingBar');
+            const loadingPercent = document.getElementById('loadingPercent');
+            const loadingSystemStatus = document.getElementById('loadingSystemStatus');
+            const logoLettersContainer = document.getElementById('logoLettersContainer');
+
+            // Text configuration
+            const brandText = "FLUXUSER STUDIOZ";
+            
+            // Build letter spans with inline styles dynamically to prevent cluttering the HTML source
+            brandText.split('').forEach((char, index) => {
+                const charSpan = document.createElement('span');
+                if (char === ' ') {
+                    // Create spacing for whitespace
+                    charSpan.className = "w-4 sm:w-6 inline-block";
+                } else {
+                    charSpan.textContent = char;
+                    charSpan.className = "letter-bounce opacity-0 inline-block font-syne font-extrabold text-2xl sm:text-4xl text-charcoal tracking-normal transform-style-3d";
+                    // Stagger drop interval with 75ms offset per letter
+                    charSpan.style.animationDelay = `${index * 75}ms`;
+                }
+                logoLettersContainer.appendChild(charSpan);
+            });
+
+            // Handle progress track logic
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.floor(Math.random() * 8) + 3;
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Assembly stage (Decrease spacing, align & trigger wave)
+                    setTimeout(() => {
+                        loadingSystemStatus.textContent = "blueprints assembled";
+                        logoLettersContainer.classList.add('gap-0.5', 'md:gap-1'); // Draw together dynamically
+                        
+                        // Activate flowing connection wave across dropped letters
+                        const letters = logoLettersContainer.querySelectorAll('.letter-bounce');
+                        letters.forEach((letter, index) => {
+                            letter.style.transition = "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)";
+                            // Stagger wave sequence start times
+                            setTimeout(() => {
+                                letter.classList.add('letter-wave-active');
+                            }, index * 80);
+                        });
+
+                        // Complete screen transition and reveal full page content
+                        setTimeout(() => {
+                            loadingScreen.classList.add('opacity-0', 'pointer-events-none');
+                            setTimeout(() => {
+                                loadingScreen.style.display = 'none';
+                            }, 1000);
+                        }, 1800); // Allow wave to cycle beautifully once
+
+                    }, 800); // Delay once progress bar fills up to allow dropped letters to land
+                }
+
+                loadingBar.style.width = progress + '%';
+                loadingPercent.textContent = progress + '%';
+
+                // Change status logs as progression triggers
+                if (progress > 30 && progress < 70) {
+                    loadingSystemStatus.textContent = "rendering layout structures...";
+                } else if (progress >= 70 && progress < 99) {
+                    loadingSystemStatus.textContent = "encrypting security keys...";
+                }
+            }, 100);
+        });
+
+        // 2. TRANSITIONAL MULTI-PAGE SPA ROUTING ENGINE
+        let activePageId = 'home';
+        const pageIds = ['home', 'who-we-are', 'what-we-craft', 'selected-work', 'sandbox', 'connect'];
+        let hintTimer = null;
+        let cardInteracted = false;
+
+        function navigateTo(targetPageId) {
+            if (targetPageId === activePageId) return;
+
+            const currentPageElement = document.getElementById(`page-${activePageId}`);
+            const targetPageElement = document.getElementById(`page-${targetPageId}`);
+
+            if (!currentPageElement || !targetPageElement) return;
+
+            // Step 1: Fire Exit Animation on current page
+            currentPageElement.classList.remove('page-enter-active');
+            currentPageElement.classList.add('page-exit-active');
+
+            setTimeout(() => {
+                // Step 2: Swap Display parameters
+                currentPageElement.classList.add('hidden');
+                currentPageElement.classList.remove('page-exit-active');
+
+                targetPageElement.classList.remove('hidden');
+                targetPageElement.classList.add('page-enter');
+
+                // Allow layout engine to calculate DOM offsets before triggering entry transitions
+                requestAnimationFrame(() => {
+                    targetPageElement.classList.add('page-enter-active');
+                    targetPageElement.classList.remove('page-enter');
+                });
+
+                activePageId = targetPageId;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Handle the click-to-flip tap hint if landing on Who We Are page
+                if (targetPageId === 'who-we-are') {
+                    startHintTimer();
+                } else {
+                    dismissTapHint();
+                }
+            }, 350); // Matches transition duration
+        }
+
+        // 3. CLICK TO FLIP CONTROLLER LOGIC
+        function toggleFounderCard(cardElement) {
+            const innerElement = cardElement.querySelector('.card-inner');
+            if (innerElement) {
+                innerElement.classList.toggle('is-flipped');
+                cardInteracted = true;
+                dismissTapHint();
+            }
+        }
+
+        // 4. AUTOPLAY HINT OVERLAY HANDLER
+        function startHintTimer() {
+            // Clear any old timers
+            dismissTapHint();
+            
+            if (cardInteracted) return; // Don't prompt again if already flipped
+
+            // Wait 2.5 seconds, then show subtle pulsing invitation HUD on front of both cards
+            hintTimer = setTimeout(() => {
+                const hintLayers = document.querySelectorAll('.tap-hint-layer');
+                hintLayers.forEach(layer => {
+                    layer.classList.remove('opacity-0', 'pointer-events-none');
+                    layer.classList.add('opacity-100');
+                });
+            }, 2500);
+        }
+
+        function dismissTapHint() {
+            if (hintTimer) {
+                clearTimeout(hintTimer);
+                hintTimer = null;
+            }
+            const hintLayers = document.querySelectorAll('.tap-hint-layer');
+            hintLayers.forEach(layer => {
+                layer.classList.remove('opacity-100');
+                layer.classList.add('opacity-0', 'pointer-events-none');
+            });
+        }
+
+        // 5. DYNAMIC INDIAN STANDARD TIME COUNTER
+        function refreshDraftingClock() {
+            const clock = document.getElementById('liveClock');
+            if (!clock) return;
+
+            const systemOptions = {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const timeFormatter = new Intl.DateTimeFormat('en-US', systemOptions);
+            clock.textContent = timeFormatter.format(new Date()) + ' IST';
+        }
+        setInterval(refreshDraftingClock, 1000);
+        refreshDraftingClock();
+
+        // 6. COORDINATE CROSSHAIR ENGINE
+        const axisX = document.getElementById('axisX');
+        const axisY = document.getElementById('axisY');
+
+        window.addEventListener('mousemove', (mouseEvent) => {
+            if (axisX && axisY) {
+                axisX.style.top = `${mouseEvent.clientY}px`;
+                axisY.style.left = `${mouseEvent.clientX}px`;
+            }
+        });
+
+        // 7. WORKSPACE MODULE VISUAL TOGGLE SWITCHER
+        const btnWireframe = document.getElementById('btn-wireframe');
+        const btnDesign = document.getElementById('btn-design');
+        const btnCode = document.getElementById('btn-code');
+        const canvasModeLabel = document.getElementById('canvasModeLabel');
+        const viewportArea = document.getElementById('viewportArea');
+
+        function setCanvasMode(selectedMode) {
+            const buttons = [btnWireframe, btnDesign, btnCode];
+            buttons.forEach(btn => {
+                btn.className = "flex-1 py-1.5 text-xs uppercase font-mono tracking-wider font-bold rounded text-stone-500 hover:text-stone-800 transition-all cursor-pointer";
+            });
+
+            const activeBtn = document.getElementById(`btn-${selectedMode}`);
+            if (activeBtn) {
+                activeBtn.className = "flex-1 py-1.5 text-xs uppercase font-mono tracking-wider font-bold rounded bg-terracotta text-white transition-all cursor-pointer shadow-sm";
+            }
+
+            if (selectedMode === 'wireframe') {
+                canvasModeLabel.textContent = "WIREFRAME VIEW";
+                canvasModeLabel.className = "font-mono text-[9px] uppercase px-2.5 py-1 rounded-md bg-terracotta/20 text-terracotta font-bold transition-all border border-terracotta/30";
+                viewportArea.innerHTML = `
+                    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-size: 20px 20px; background-image: radial-gradient(circle, #CE5A3E 1px, transparent 1px);"></div>
+                    <div class="flex justify-between items-center border-b border-dashed border-stone-700/60 pb-3">
+                        <span class="font-mono text-xs text-stone-500">[ STUDIO LOGO BOUNDARY ]</span>
+                        <span class="font-mono text-xs text-stone-500">INDEX // wire.v1</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="h-3 border border-dashed border-stone-700/60 w-1/4"></div>
+                        <div class="h-8 border-2 border-dashed border-stone-700/60 w-3/4 flex items-center justify-center">
+                            <span class="font-mono text-[10px] text-stone-600">PRIMARY CONTENT CONTAINER CONTENT MOCKUP</span>
+                        </div>
+                        <div class="h-3 border border-dashed border-stone-700/60 w-5/6"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-stone-600 font-mono text-[9px]">
+                        <span>DRAFT SNAP: 30PX</span>
+                        <span>VECTOR STRUCT: FALSE</span>
+                    </div>
+                `;
+            } else if (selectedMode === 'design') {
+                canvasModeLabel.textContent = "IDENTITY SKIN DEPLOYED";
+                canvasModeLabel.className = "font-mono text-[9px] uppercase px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-400 font-bold transition-all border border-emerald-500/30";
+                viewportArea.innerHTML = `
+                    <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-size: 30px 30px; background-image: linear-gradient(to right, rgba(16,185,129,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(16,185,129,0.05) 1px, transparent 1px);"></div>
+                    <div class="flex justify-between items-center pb-4 relative z-10 border-b border-stone-800">
+                        <span class="font-syne font-extrabold text-sm tracking-tight text-white flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> TERRA COTTA CAFE
+                        </span>
+                        <span class="font-mono text-[9px] text-stone-400 bg-stone-900 px-2 py-0.5 rounded">SERVICES // PORTFOLIO</span>
+                    </div>
+                    <div class="my-6 relative z-10 space-y-4 text-left px-4">
+                        <span class="font-mono text-[10px] text-emerald-400 uppercase font-bold tracking-widest block">[ Live UI Layer Active ]</span>
+                        <h1 class="font-syne font-bold text-2xl sm:text-3xl text-white leading-tight">Authentic organic roasts constructed over local artisan design grids.</h1>
+                        <p class="font-editorial text-stone-300 text-sm leading-relaxed font-light">Custom conversion setups tracking geometric element engagement and viewport latency metrics.</p>
+                    </div>
+                    <div class="flex justify-between items-center text-stone-500 font-mono text-[9px] border-t border-dashed border-stone-800 pt-4 relative z-10">
+                        <span>THEME: LINEN MATRIX</span>
+                        <span class="text-emerald-400">STATUS: INTERACTIVE ENGINE LIVE</span>
+                    </div>
+                `;
+            } else if (selectedMode === 'code') {
+                canvasModeLabel.textContent = "RAW APPLICATION DOM COMPILED";
+                canvasModeLabel.className = "font-mono text-[9px] uppercase px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-400 font-bold transition-all border border-blue-500/30";
+                viewportArea.innerHTML = `
+                    <div class="font-mono text-[11px] text-blue-400 space-y-1.5 select-all overflow-y-auto max-h-[160px] no-scrollbar text-left relative z-10">
+                        <div><span class="text-stone-500">&lt;main</span> <span class="text-yellow-500">class=</span><span class="text-emerald-400">"max-w-7xl mx-auto grid grid-cols-12"</span><span class="text-stone-500">&gt;</span></div>
+                        <div class="pl-4"><span class="text-stone-500">&lt;div</span> <span class="text-yellow-500">class=</span><span class="text-emerald-400">"col-span-5 sticky top-28"</span><span class="text-stone-500">&gt;</span></div>
+                        <div class="pl-8"><span class="text-stone-500">&lt;h1</span> <span class="text-yellow-500">class=</span><span class="text-emerald-400">"font-syne font-extrabold text-5xl"</span><span class="text-stone-500">&gt;</span>Fluxuser Studioz<span class="text-stone-500">&lt;/h1&gt;</span></div>
+                        <div class="pl-4"><span class="text-stone-500">&lt;/div&gt;</span></div>
+                        <div class="pl-4"><span class="text-stone-500">&lt;p&gt;</span>Handcoded custom architecture parameters.<span class="text-stone-500">&lt;/p&gt;</span></div>
+                        <div><span class="text-stone-500">&lt;/main&gt;</span></div>
+                    </div>
+                    <div class="flex justify-between items-center text-stone-500 font-mono text-[9px] border-t border-dashed border-stone-800 pt-4 relative z-10">
+                        <span>RENDER ENGINE: CHROMIUM</span>
+                        <span class="text-blue-400">JSON DOM: VALIDATED</span>
+                    </div>
+                `;
+            }
+        }
+        setCanvasMode('wireframe');
+
+        // Helper to switch sub elements within toolkit capability cards smoothly
+        function cardSubElements(specClass, titleClass, descClass) {
+            document.querySelectorAll('.card-spec-tag').forEach(el => el.className = `font-mono text-xs font-bold card-spec-tag ${specClass}`);
+            document.querySelectorAll('.card-title-target').forEach(el => el.className = `font-syne font-bold text-lg mt-2 card-title-target ${titleClass}`);
+            document.querySelectorAll('.card-desc-target').forEach(el => el.className = `font-editorial text-sm font-light card-desc-target ${descClass}`);
+        }
+    </script>
+</body>
+</html>
