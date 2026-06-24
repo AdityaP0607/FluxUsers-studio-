@@ -184,44 +184,25 @@
 .inactive-canvas-btn:hover {
     color: #292524;
 }
-   @media screen and (max-width: 600px) {
-            /* --- FIX 1: LOADER & HERO LOGO CUTOFF --- */
+ @media screen and (max-width: 600px) {
             .loader-title {
-                font-size: 8vw; /* Scales down beautifully on phones */
-                letter-spacing: -1px;
-                white-space: normal; /* Allows text to adapt safely if screen is ultra-narrow */
-                text-align: center;
+                font-size: 10vw;
             }
 
             .heading h1 {
-                font-size: 8vw; /* Prevents the main header from breaking out of bounds */
-                white-space: normal;
-                text-align: left;
-            }
-
-            /* --- FIX 2: WORK SPACE & NAVIGATION ALIGNMENT --- */
-            .nav-item {
-                grid-template-columns: 1fr auto; /* Forces a clean layout grid on mobile */
-                align-items: center;
-                padding: 20px 15px; /* Better padding for thumb-tapping */
-            }
-
-            .nav-left {
-                gap: 15px; /* Keeps the number and the label spaced tightly together */
+                font-size: 7vw;
             }
 
             .nav-item h2 {
-                font-size: 1.25rem; /* Reduces size slightly so multi-word items fit perfectly on one line */
-                margin: 0;
-                white-space: nowrap; 
+                font-size: 1.5rem;
             }
 
             .arrow-icon {
-                font-size: 1.2rem;
+                font-size: 1.5rem;
             }
 
             .tag {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
             }
         }
 
