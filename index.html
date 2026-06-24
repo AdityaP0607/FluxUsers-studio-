@@ -184,34 +184,46 @@
 .inactive-canvas-btn:hover {
     color: #292524;
 }
-    </style>
-</head>
-<body id="mainBody" class="bg-linen text-charcoal min-h-screen relative overflow-x-hidden selection:bg-terracotta selection:text-white drafting-grid">
+   @media screen and (max-width: 600px) {
+            /* --- FIX 1: LOADER & HERO LOGO CUTOFF --- */
+            .loader-title {
+                font-size: 8vw; /* Scales down beautifully on phones */
+                letter-spacing: -1px;
+                white-space: normal; /* Allows text to adapt safely if screen is ultra-narrow */
+                text-align: center;
+            }
 
-    <!-- INTRO LOADING SCREEN (Kinetic Letter Swarm & Progress Bar) -->
-    <div id="loadingScreen" class="fixed inset-0 z-[100] bg-linen flex flex-col items-center justify-center transition-all duration-1000 ease-in-out">
-        <div class="space-y-8 max-w-xl w-full px-8 text-center flex flex-col items-center justify-center">
-            
-            <!-- Outer 3D Perspective Box for kinetic character drop -->
-            <div class="perspective-1000 h-16 flex items-center justify-center select-none overflow-visible">
-                <div class="flex gap-2 md:gap-3.5 transition-all duration-1000 ease-out" id="logoLettersContainer">
-                    <!-- Letter Spans dynamically injected by DOM load scripts below -->
-                </div>
-            </div>
+            .heading h1 {
+                font-size: 8vw; /* Prevents the main header from breaking out of bounds */
+                white-space: normal;
+                text-align: left;
+            }
 
-            <!-- Loader Progress Diagnostics -->
-            <div class="space-y-4 w-full max-w-sm">
-                <div class="relative w-full h-[2px] bg-stone-300/40 rounded-full overflow-hidden" id="loadingBarBg">
-                    <div class="absolute top-0 left-0 h-full bg-terracotta w-0 transition-all duration-500 ease-out" id="loadingBar"></div>
-                </div>
-                <div class="flex justify-between items-center font-mono text-[9px] text-stone-400" id="loadingMeta">
-                    <span id="loadingSystemStatus" class="tracking-widest uppercase">CONNECTING SYSTEM NODES...</span>
-                    <span id="loadingPercent">0%</span>
-                </div>
-            </div>
+            /* --- FIX 2: WORK SPACE & NAVIGATION ALIGNMENT --- */
+            .nav-item {
+                grid-template-columns: 1fr auto; /* Forces a clean layout grid on mobile */
+                align-items: center;
+                padding: 20px 15px; /* Better padding for thumb-tapping */
+            }
 
-        </div>
-    </div>
+            .nav-left {
+                gap: 15px; /* Keeps the number and the label spaced tightly together */
+            }
+
+            .nav-item h2 {
+                font-size: 1.25rem; /* Reduces size slightly so multi-word items fit perfectly on one line */
+                margin: 0;
+                white-space: nowrap; 
+            }
+
+            .arrow-icon {
+                font-size: 1.2rem;
+            }
+
+            .tag {
+                font-size: 0.65rem;
+            }
+        }
 
     <!-- ARCHITECTURAL DRAFTING AXIS LINES -->
     <div id="axisX" class="cursor-axis-x left-0 w-full h-[1px] hidden md:block"></div>
